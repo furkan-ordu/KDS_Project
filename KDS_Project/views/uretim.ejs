@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Üretim Yeri Seçimi</title>
+    <link rel="stylesheet" href="/public/css/styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #343a40;
+            color: white;
+            padding: 1rem;
+        }
+
+        .navbar h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .navbar .logout-btn {
+            background-color: #dc3545;
+            border: none;
+            padding: 0.5rem 1rem;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .navbar .logout-btn:hover {
+            background-color: #c82333;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #343a40;
+            color: white;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .sidebar a:hover {
+            background-color: #495057;
+        }
+
+        .sidebar h2 {
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .content {
+            flex: 1;
+            padding: 2rem;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card h3 {
+            margin-top: 0;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        form label {
+            font-weight: bold;
+        }
+
+        form input {
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        form button {
+            background-color: #007bff;
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        form button:hover {
+            background-color: #0056b3;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        #chart-container {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        #chart-container canvas {
+            max-width: 100%;
+        }
+
+        .filter-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .filter-container select {
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-right: 1rem;
+        }
+
+        .filter-container button {
+            background-color: #007bff;
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .filter-container button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>TOPSIS Analizi</h1>
+        <button class="logout-btn" onclick="location.href='/logout'">Çıkış Yap</button>
+    </div>
+
+    <div class="container">
+        <div class="sidebar">
+            <h2>Menü</h2>
+            <a href="/">Ana Sayfa</a>
+            <a href="/uretim">TOPSIS Analizi</a>
+            <a href="/urunler">Ürünler</a>
+            <a href="/magaza">Mağazalar</a>
+            <a href="/maps">Mağazalar ve İmalathaneler Haritası</a>
+        </div>
+
+        <div class="content">
+            <div class="card">
+                <h3>Kriter Ağırlıkları</h3>
+                <p style="color: red;" > Uyarı : Kriterlerin ağırlıkları toplamı 1 olmalıdır.</p>
+                <form id="topsisForm">
+                    <label for="arsa_fiyat">Arsa Fiyatı Ağırlığı</label>
+                    <input type="number" name="arsa_fiyat" step="0.01" min="0" max="1" required>
+
+                    <label for="issiz_oran">İşsizlik Oranı Ağırlığı</label>
+                    <input type="number" name="issiz_oran" step="0.01" min="0" max="1" required>
+
+                    <label for="ort_sicaklik">Ortalama Sıcaklık Ağırlığı</label>
+                    <input type="number" name="ort_sicaklik" step="0.01" min="0" max="1" required>
+
+                    <button type="submit">Hesapla</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h3>Girilen Kriter Ağırlıklarına Göre En İyi Skoru Olan Şehirler Tablosu</h3>
+                <table id="resultsTable">
+                    <thead>
+                        <tr>
+                            <th>İl Adı</th>
+                            <th>Arsa Fiyatı</th>
+                            <th>İşsizlik Oranı</th>
+                            <th>Ortalama Sıcaklık</th>
+                            <th>Skor</th>
+                        </tr>
+                    </thead>
+                    <tbody id="resultsBody">
+                        <!-- Dinamik veriler buraya eklenecek -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="chart-container">
+                <h3>Grafik Görünümü</h3>
+                <div class="filter-container">
+                    <select id="chartFilter">
+                        <option value="arsa_fiyat">Arsa Fiyatı</option>
+                        <option value="issiz_oran">İşsizlik Oranı</option>
+                        <option value="ort_sicaklik">Ortalama Sıcaklık</option>
+                        <option value="score">Skor</option>
+                    </select>
+                    <button onclick="updateChart()">Güncelle</button>
+                </div>
+                <canvas id="barChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.getElementById('topsisForm').addEventListener('submit', function (event) {
+    event.preventDefault();
+
+    // Form verilerini al
+    const formData = new FormData(event.target);
+    const weights = {
+        arsa_fiyat: parseFloat(formData.get('arsa_fiyat')),
+        issiz_oran: parseFloat(formData.get('issiz_oran')),
+        ort_sicaklik: parseFloat(formData.get('ort_sicaklik')),
+    };
+
+    // fetch isteği gönder
+    fetch('/uretim/calculate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ weights }),
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP Error: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                updateTable(data.result);
+                updateChartData(data.result);
+            } else {
+                console.error('Başarısız yanıt:', data.message);
+            }
+        })
+        .catch(error => console.error('Fetch Hatası:', error));
+});
+
+        function updateTable(results) {
+            const tbody = document.getElementById('resultsBody');
+            tbody.innerHTML = '';
+            results.forEach(row => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${row.il_ad}</td>
+                    <td>${row.arsa_fiyat}</td>
+                    <td>${row.issiz_oran}</td>
+                    <td>${row.ort_sicaklik}</td>
+                    <td>${row.score}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function updateChart() {
+    const filter = document.getElementById('chartFilter').value;
+    const tableRows = document.querySelectorAll('#resultsBody tr');
+
+    const labels = [];
+    const data = [];
+
+    tableRows.forEach(row => {
+        const cells = row.querySelectorAll('td');
+        labels.push(cells[0].textContent); // İl Adı
+        switch (filter) {
+            case 'arsa_fiyat':
+                data.push(parseFloat(cells[1].textContent) || 0);
+                break;
+            case 'issiz_oran':
+                data.push(parseFloat(cells[2].textContent) || 0);
+                break;
+            case 'ort_sicaklik':
+                data.push(parseFloat(cells[3].textContent) || 0);
+                break;
+            case 'score':
+                data.push(parseFloat(cells[4].textContent) || 0);
+                break;
+        }
+    });
+
+    barChart.data.labels = labels;
+    barChart.data.datasets[0].label = filter.replace('_', ' ').toUpperCase();
+    barChart.data.datasets[0].data = data;
+    barChart.update();
+}
+
+        const barChart = new Chart(document.getElementById('barChart'), {
+            type: 'bar',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: '',
+                    data: [],
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: true
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mağazalar ve İmalathaneler</title>
+    <link rel="stylesheet" href="/public/css/styles.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #343a40;
+            color: white;
+            padding: 1rem;
+        }
+
+        .navbar h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .navbar .logout-btn {
+            background-color: #dc3545;
+            border: none;
+            padding: 0.5rem 1rem;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .navbar .logout-btn:hover {
+            background-color: #c82333;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #343a40;
+            color: white;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .sidebar a:hover {
+            background-color: #495057;
+        }
+
+        .sidebar h2 {
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .content {
+            flex: 1;
+            padding: 2rem;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card h3 {
+            margin-top: 0;
+        }
+
+        #map {
+        height: 500px;
+        width: 100%;
+        border-radius: 5px;
+        margin-top: 1rem;
+    }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>Mağazalar ve İmalathaneler Haritası</h1>
+        <button class="logout-btn" onclick="location.href='/logout'">Çıkış Yap</button>
+    </div>
+
+    <div class="container">
+        <div class="sidebar">
+            <h2>Menü</h2>
+            <a href="/">Ana Sayfa</a>
+            <a href="/uretim">TOPSIS Analizi</a>
+            <a href="/urunler">Ürünler</a>
+            <a href="/magaza">Mağazalar</a>
+            <a href="/maps">Mağazalar ve İmalathaneler Haritası</a>
+        </div>
+
+        <div class="content">
+            <div class="card">
+                <h3>Mağazalar ve İmalatheneler Haritası  </h3>
+                <p>🔴 Mağazalar 🔵 İmalathaneler</p>
+                <div id="map"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Harita
+        const map = L.map('map').setView([39.9272, 32.8644], 6); // Ankara koordinatları
+        
+        // OpenStreetMap haritası
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+        }).addTo(map);
+    
+        // İllerdeki mağazalar ve koordinatlar
+        const magazaIlceler = [
+            { ad: 'Eskişehir', koordinatlar: [39.7833, 30.5167] },
+            { ad: 'İstanbul', koordinatlar: [41.013611, 28.955] },
+            { ad: 'Balıkesir', koordinatlar: [39.6483, 27.8825] },
+            { ad: 'Kütahya', koordinatlar: [39.4167, 29.9833] },
+            { ad: 'Afyonkarahisar', koordinatlar: [38.7576, 30.5373] },
+            { ad: 'Muğla', koordinatlar: [37.216, 28.3636] },
+            { ad: 'Isparta', koordinatlar: [37.7647, 30.5567] },
+            { ad: 'Antalya', koordinatlar: [36.892, 30.6944] },
+            { ad: 'Adana', koordinatlar: [37, 35.3167] },
+            { ad: 'İzmir', koordinatlar: [38.4333, 27.15] },
+        ];
+    
+        // İllerdeki imalathaneler ve koordinatlar
+        const imalathaneIlceler = [
+            { ad: 'İzmir', koordinatlar: [38.4333, 27.15] },
+            { ad: 'İstanbul', koordinatlar: [41.013611, 28.955] },
+            { ad: 'Ankara', koordinatlar: [39.9272, 32.8644] },
+            { ad: 'Antalya', koordinatlar: [36.892, 30.6944] },
+            { ad: 'Denizli', koordinatlar: [37.767, 29.083] },
+            { ad: 'Afyonkarahisar', koordinatlar: [38.7576, 30.5373] }
+        ];
+    
+        // Mağazalar nokta
+        magazaIlceler.forEach((ilce) => {
+            L.circleMarker(ilce.koordinatlar, {
+                color: 'red',
+                radius: 10, // Daire boyutu
+                fillColor: 'red',
+                fillOpacity: 0.8,
+            })
+                .addTo(map)
+                .bindPopup(`<b>${ilce.ad}</b><br>Bu ilçede mağazamız var.`);
+        });
+    
+        // İmalathaneler nokta
+        imalathaneIlceler.forEach((ilce) => {
+            L.circleMarker(ilce.koordinatlar, {
+                color: 'blue',
+                radius: 10, // Daire boyutu
+                fillColor: 'blue',
+                fillOpacity: 0.8,
+            })
+                .addTo(map)
+                .bindPopup(`<b>${ilce.ad}</b><br>Bu ilçede imalathanemiz var.`);
+        });
+    </script>
+    
+</body>
+</html>

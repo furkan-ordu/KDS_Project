@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mağazalar</title>
+    <link rel="stylesheet" href="/public/css/styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #343a40;
+            color: white;
+            padding: 1rem;
+        }
+
+        .navbar h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .navbar .logout-btn {
+            background-color: #dc3545;
+            border: none;
+            padding: 0.5rem 1rem;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .navbar .logout-btn:hover {
+            background-color: #c82333;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #343a40;
+            color: white;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .sidebar a:hover {
+            background-color: #495057;
+        }
+
+        .sidebar h2 {
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .content {
+            flex: 1;
+            padding: 2rem;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card h3 {
+            margin-top: 0;
+        }
+
+        .store-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .store-list li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .store-list li span {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>Mağazalar</h1>
+        <button class="logout-btn" onclick="location.href='/logout'">Çıkış Yap</button>
+    </div>
+
+    <div class="container">
+        <div class="sidebar">
+            <h2>Menü</h2>
+            <a href="/">Ana Sayfa</a>
+            <a href="/uretim">TOPSIS Analizi</a>
+            <a href="/urunler">Ürünler</a>
+            <a href="/magaza">Mağazalar</a>
+            <a href="/maps">Mağazalar ve İmalathaneler Haritası</a>
+        </div>
+
+        <div class="content">
+            <div class="card">
+                <h3>Mağaza Listesi</h3>
+                <ul class="store-list">
+                    <li>⚫ Eskişehir</li>
+                    <li>⚫ İstanbul</li>
+                    <li>⚫ Balıkesir</li>
+                    <li>⚫ Kütahya</li>
+                    <li>⚫ Afyonkarahisar</li>
+                    <li>⚫ Muğla</li>
+                    <li>⚫Isparta</li>
+                    <li>⚫ Antalya</li>
+                    <li>⚫ Adana</li>
+                    <li>⚫ İzmir</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>Yeni Mağaza Ekleme</h3>
+                <p>Yeni bir mağaza eklemek için aşağıdaki formu doldurun!</p>
+                <form>
+                    <label for="store-name">İl</label><br>
+                    <input type="text" id="store-name" name="store-name" placeholder="Mağaza adı" required><br><br>
+                    <label for="store-location">Koordinat</label><br>
+                    <input type="text" id="store-location" name="store-location" placeholder="Lokasyon" required><br><br>
+                    <button type="submit">Ekle</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
